@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+$root-background-color: #242424;
+$block-background-color: #272727;
+
+$default-text-color: #ffffff;
+$default-font-family: "Montserrat", san-serif;
+
+$default-font-size: 16px;
+$tablet-font-size: 14.4px;
+$mobile-font-size: 12px;
+
+$search-bar-background: #313131;
+$search-placeholder-text-color: rgb(255, 255, 255, 30%);
+$search-bttn-hover-color: #353535;
+$search-bttn-active-color: #329217;
+
+$sort-bttn-background: #313131;
+$sort-bttn-hover: #353535;
+$sort-bttn-active: #222121;
+
+$add-bttn-background: #313131;
+$add-bttn-hover: #353535;
+$add-bttn-active: #222121;
+
+$list-item-background: #2e2e2e;
+$checkbox-color: #48b02c;
+
+$trash-bttn-hover: rgb(255, 0, 0);
+$trash-bttn-hover-animation: trash-hover 0.3s infinite;
+$trash-bttn-active: #222121;
+
+@mixin flexbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    box-sizing: border-box;
+}

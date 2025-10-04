@@ -1,0 +1,18 @@
+@import "normalize.css";
+@import "./assets/var.scss";
+
+:root {
+    font-size: $default-font-size;
+    overflow: hidden;
+    user-select: none;
+
+    background-color: $root-background-color;
+
+    @media (max-width: 1024px) {
+        font-size: $tablet-font-size;
+    }
+
+    @media (max-width: 691px) {
+        font-size: $mobile-font-size;
+    }
+}
