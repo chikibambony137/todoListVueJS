@@ -24,14 +24,10 @@ export default {
 
   methods: {
     addTaskTemplate() {
-      this.taskList.unshift({id: Date.now()});
-      if (document.querySelector(".item__input") != null) {
-        document.querySelector(".item__input").focus();
-      }
+      this.$emit('addTaskTemplate');
     },
     sortList() {
-      console.log(localStorage.getItem("tasklist"));
-      document.querySelector(".item__input").focus();
+      console.log(localStorage.getItem("tasklist")); // WIP
     },
     searchItem(input) {
       this.$emit("search", input);

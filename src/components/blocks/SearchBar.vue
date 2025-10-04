@@ -29,7 +29,7 @@
                 searchInput: "",
                 isLoading: false,
                 timeoutID: function () {},
-                defaultSearchDelay: 1000,
+                defaultSearchDelay: 500,
                 searchDelay: this.defaultSearchDelay,
             };
         },

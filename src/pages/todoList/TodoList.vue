@@ -3,7 +3,8 @@
         <Header
             class="content__header"
             v-bind:taskList="taskList"
-            @search="searchItem"></Header>
+            @search="searchItem"
+            @addTaskTemplate="addTaskTemplate"></Header>
         <Main
             class="content__tasklist"
             v-bind:taskList="taskListVisuality"
@@ -25,7 +26,9 @@
         methods: {
             removeTask(id) {
                 this.taskList = this.taskList.filter((task) => task.id != id);
-                this.taskListVisuality = this.taskListVisuality.filter((task) => task.id != id);
+                this.taskListVisuality = this.taskListVisuality.filter(
+                    (task) => task.id != id
+                );
                 localStorage.setItem("tasklist", JSON.stringify(this.taskList));
             },
             addTask(id, name) {
@@ -38,7 +41,16 @@
                 const filteredList = this.taskList.filter((task) =>
                     task.name.toLowerCase().includes(input.toLowerCase())
                 );
-                this.taskListVisuality = filteredList; 
+                this.taskListVisuality = filteredList;
+            },
+            addTaskTemplate() {
+                this.taskListVisuality = this.taskList;
+                this.taskList.unshift({ id: Date.now() });
+                let timeoutID = setTimeout(() => {
+                    if (document.querySelector(".item__input") != null) {
+                        document.querySelector(".item__input").focus();
+                    }
+                }, 500);
             },
         },
         mounted() {
@@ -53,10 +65,9 @@
                 handler(newList) {
                     console.log(newList);
                 },
-                deep: true
+                deep: true,
             },
-            
-        }
+        },
     };
 </script>
 
