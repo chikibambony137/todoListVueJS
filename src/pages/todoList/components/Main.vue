@@ -6,7 +6,8 @@
                 class="tasklist__item"
                 v-bind:task="task"
                 @remove="removeTask"
-                @add="addTask"></TaskItem>
+                @add="addTask"
+                @inputFocus="(newItemInput) => this.$emit('inputFocus', newItemInput)"></TaskItem>
         </ul>
     </main>
 </template>

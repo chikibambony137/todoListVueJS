@@ -9,7 +9,8 @@
             class="content__tasklist"
             v-bind:taskList="taskListVisuality"
             @remove="removeTask"
-            @add="addTask"></Main>
+            @add="addTask"
+            @inputFocus="(newItemTemplate) => itemTemplate = newItemTemplate"></Main>
     </div>
 </template>
 
@@ -21,6 +22,8 @@
             return {
                 taskList: JSON.parse(localStorage.getItem("tasklist")),
                 taskListVisuality: [],
+
+                itemTemplate: ""
             };
         },
         methods: {
@@ -46,10 +49,8 @@
             addTaskTemplate() {
                 this.taskListVisuality = this.taskList;
                 this.taskList.unshift({ id: Date.now() });
-                let timeoutID = setTimeout(() => {
-                    if (document.querySelector(".item__input") != null) {
-                        document.querySelector(".item__input").focus();
-                    }
+                setTimeout(() => {
+                    this.itemTemplate?.focus();
                 }, 500);
             },
         },
