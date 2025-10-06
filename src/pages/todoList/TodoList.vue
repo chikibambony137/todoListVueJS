@@ -10,66 +10,79 @@
             v-bind:taskList="taskListVisuality"
             @remove="removeTask"
             @add="addTask"
-            @inputFocus="(newItemTemplate) => itemTemplate = newItemTemplate"></Main>
+            @inputFocus="
+                (newItemTemplate) => (itemTemplate = newItemTemplate)
+            "></Main>
     </div>
 </template>
 
-<script>
+<script setup>
+    import { ref, onMounted, watch } from "vue";
+
     import Header from "./components/Header.vue";
     import Main from "./components/Main.vue";
-    export default {
-        data() {
-            return {
-                taskList: JSON.parse(localStorage.getItem("tasklist")),
-                taskListVisuality: [],
 
-                itemTemplate: ""
-            };
+    // original list of tasks
+    let taskList = ref(JSON.parse(localStorage.getItem("tasklist")) || []);
+    // visuality list of tasks
+    let taskListVisuality = ref([]);
+
+    onMounted(() => {
+        taskListVisuality.value = taskList.value;
+    });
+
+    // if taskList is changed then he will be saved in localStorage
+    watch(
+        taskList,
+        (newValue) => {
+            localStorage.setItem("tasklist", JSON.stringify(newValue));
         },
-        methods: {
-            removeTask(id) {
-                this.taskList = this.taskList.filter((task) => task.id != id);
-                this.taskListVisuality = this.taskListVisuality.filter(
-                    (task) => task.id != id
-                );
-                localStorage.setItem("tasklist", JSON.stringify(this.taskList));
-            },
-            addTask(id, name) {
-                const task = this.taskList.filter((task) => task.id == id)[0];
-                task.name = name;
-                localStorage.setItem("tasklist", JSON.stringify(this.taskList));
-            },
-            searchItem(input) {
-                this.taskList = JSON.parse(localStorage.getItem("tasklist"));
-                const filteredList = this.taskList.filter((task) =>
-                    task.name.toLowerCase().includes(input.toLowerCase())
-                );
-                this.taskListVisuality = filteredList;
-            },
-            addTaskTemplate() {
-                this.taskListVisuality = this.taskList;
-                this.taskList.unshift({ id: Date.now() });
-                setTimeout(() => {
-                    this.itemTemplate?.focus();
-                }, 500);
-            },
-        },
-        mounted() {
-            this.taskListVisuality = this.taskList;
-        },
-        components: {
-            Header,
-            Main,
-        },
-        watch: {
-            taskList: {
-                handler(newList) {
-                    console.log(newList);
-                },
-                deep: true,
-            },
-        },
-    };
+        { deep: true }
+    );
+
+    /** removes task by from original taskList & taskListVisuality
+     * @param {number} id
+     */
+    function removeTask(id) {
+        taskList.value = taskList.value.filter((task) => task.id != id);
+        taskListVisuality.value = taskListVisuality.value.filter(
+            (task) => task.id != id
+        );
+    }
+
+    /** sets name to task by id in taskList
+     * @param {number} id
+     * @param {string} name
+     */
+    function addTask(id, name) {
+        const task = taskList.value.filter((task) => task.id == id)[0];
+        task.name = name;
+    }
+
+    /** filters taskList and changes taskListVisuality by name
+     * @param {string} input
+     */
+    function searchItem(input) {
+        if (input == "") {
+            taskListVisuality.value = taskList.value;
+        } else {
+            taskListVisuality.value = taskList.value.filter((task) =>
+                task.name?.toLowerCase().includes(input.toLowerCase())
+            );
+        }
+    }
+
+    /** ref to DOM input */
+    const itemTemplate = ref(null);
+
+    /** adds task template without name to start of taskList and focuses to DOM input */
+    function addTaskTemplate() {
+        taskListVisuality.value = taskList.value;
+        taskList.value.unshift({ id: Date.now() });
+        setTimeout(() => {
+            itemTemplate.value.focus();
+        }, 500);
+    }
 </script>
 
 <style scoped lang="scss">

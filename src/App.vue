@@ -4,14 +4,9 @@
     </div>
 </template>
 
-<script>
+<script setup>
     import TodoList from "./pages/todoList/TodoList.vue";
 
-    export default {
-        components: {
-            TodoList,
-        },
-    };
 </script>
 
 <style lang="scss">
