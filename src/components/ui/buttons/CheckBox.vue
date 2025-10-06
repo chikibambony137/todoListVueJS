@@ -1,12 +1,30 @@
 <template>
     <label class="container">
-        <input type="checkbox" />
+        <input type="checkbox" v-model="checked" />
         <div class="checkmark"></div>
     </label>
 </template>
 
-<script>
-    export default {};
+<script setup>
+    import { onMounted, ref, watch, defineProps } from "vue";
+
+    const props = defineProps({
+        checked: {
+            type: Boolean,
+            default: "false",
+            required: true,
+        },
+    });
+
+    const emit = defineEmits(["checked"]);
+
+    const checked = ref(false);
+
+    watch(checked, (checked) => emit("checked", checked));
+
+    onMounted(() => {
+        checked.value = props.checked;
+    })
 </script>
 
 <style scoped lang="scss">

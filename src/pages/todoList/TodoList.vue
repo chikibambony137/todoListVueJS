@@ -12,7 +12,8 @@
             @add="addTask"
             @inputFocus="
                 (newItemTemplate) => (itemTemplate = newItemTemplate)
-            "></Main>
+            "
+            @checked="toggleCheckBoxTask"></Main>
     </div>
 </template>
 
@@ -78,10 +79,15 @@
     /** adds task template without name to start of taskList and focuses to DOM input */
     function addTaskTemplate() {
         taskListVisuality.value = taskList.value;
-        taskList.value.unshift({ id: Date.now() });
+        taskList.value.unshift({ id: Date.now(), checked: false });
         setTimeout(() => {
             itemTemplate.value.focus();
         }, 500);
+    }
+
+    function toggleCheckBoxTask(checked, taskId) {
+        let task = taskList.value.filter((task) => task.id == taskId)[0];
+        task.checked = checked;
     }
 </script>
 

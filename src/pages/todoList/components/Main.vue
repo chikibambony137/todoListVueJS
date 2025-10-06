@@ -7,7 +7,8 @@
                 v-bind:task="task"
                 @remove="removeTask"
                 @add="addTask"
-                @inputFocus="(newItemInput) => this.$emit('inputFocus', newItemInput)"></TaskItem>
+                @inputFocus="(newItemInput) => this.$emit('inputFocus', newItemInput)"
+                @checked="(checked, taskId) => this.$emit('checked', checked, taskId)"></TaskItem>
         </ul>
     </main>
 </template>

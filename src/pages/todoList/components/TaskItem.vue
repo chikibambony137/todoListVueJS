@@ -1,9 +1,16 @@
 <template>
-    <div class="item" >
-        <CheckBox class="item__checkbox"></CheckBox>
-        <form v-if="task.name == undefined" @submit.prevent="accessNameTask(task.id, this.newItemInputName)">
+    <div class="item">
+        <CheckBox
+            class="item__checkbox"
+            @checked="
+                (checked) => this.$emit('checked', checked, task.id)
+            "
+            :checked="task.checked"></CheckBox>
+        <form
+            v-if="task.name == undefined"
+            @submit.prevent="accessNameTask(task.id, this.newItemInputName)">
             <input
-            ref="newItemInput"
+                ref="newItemInput"
                 class="item__input"
                 v-model="newItemInputName"
                 placeholder="Введите задание" />
@@ -20,7 +27,7 @@
     import TrashButton from "../../../components/ui/buttons/TrashButton.vue";
 
     export default {
-        emits: ['add', 'remove', 'inputFocus'],
+        emits: ["add", "remove", "inputFocus", "checked"],
         data() {
             return {
                 newItemInputName: "",
@@ -49,8 +56,8 @@
         },
         mounted() {
             let newItemInput = this.$refs.newItemInput;
-            this.$emit('inputFocus', newItemInput)
-        }
+            this.$emit("inputFocus", newItemInput);
+        },
     };
 </script>
 
