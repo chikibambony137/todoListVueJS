@@ -2,13 +2,11 @@
     <div class="item">
         <CheckBox
             class="item__checkbox"
-            @checked="
-                (checked) => this.$emit('checked', checked, task.id)
-            "
+            @checked="(checked) => emit('checked', checked, task.id)"
             :checked="task.checked"></CheckBox>
         <form
             v-if="task.name == undefined"
-            @submit.prevent="accessNameTask(task.id, this.newItemInputName)">
+            @submit.prevent="accessNameTask(task.id, newItemInputName.value)">
             <input
                 ref="newItemInput"
                 class="item__input"
@@ -22,43 +20,37 @@
     </div>
 </template>
 
-<script>
+<script setup>
+    import { ref, defineProps, defineEmits, onMounted, useTemplateRef } from "vue";
+
     import CheckBox from "../../../components/ui/buttons/CheckBox.vue";
     import TrashButton from "../../../components/ui/buttons/TrashButton.vue";
 
-    export default {
-        emits: ["add", "remove", "inputFocus", "checked"],
-        data() {
-            return {
-                newItemInputName: "",
-            };
+    const props = defineProps({
+        task: {
+            type: Object,
+            required: true,
         },
-        props: {
-            task: {
-                type: Object,
-                required: true,
-            },
-        },
-        components: {
-            CheckBox,
-            TrashButton,
-        },
-        methods: {
-            removeItem(taskId) {
-                this.$emit("remove", taskId);
-                console.log(`item with id ${taskId} was removed!`);
-            },
-            accessNameTask(taskId, taskName) {
-                this.$emit("add", taskId, taskName);
-                console.log(`item ${taskName} was added!`);
-                this.newItemInputName = "";
-            },
-        },
-        mounted() {
-            let newItemInput = this.$refs.newItemInput;
-            this.$emit("inputFocus", newItemInput);
-        },
-    };
+    });
+
+    const emit = defineEmits(["add", "remove", "inputFocus", "checked"]);
+
+    const newItemInputName = ref("");
+
+    function removeItem(taskId) {
+        emit("remove", taskId);
+    }
+
+    function accessNameTask(taskId, taskName) { 
+        emit("add", taskId, taskName);
+        newItemInputName.value = "";
+    }
+
+    const newItemInput = useTemplateRef("newItemInput");
+
+    onMounted(() => {
+        emit("inputFocus", newItemInput.value);
+    });
 </script>
 
 <style lang="scss" scoped>
