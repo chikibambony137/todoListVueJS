@@ -1,41 +1,33 @@
 <template>
     <main class="tasklist">
-        <ul class="tasklist__list" >
-            <TaskItem v-for="task in taskList"
+        <ul class="tasklist__list">
+            <TaskItem
+                v-for="task in taskList"
                 v-bind:key="task.id"
                 class="tasklist__item"
                 v-bind:task="task"
-                @remove="removeTask"
-                @add="addTask"
-                @inputFocus="(newItemInput) => this.$emit('inputFocus', newItemInput)"
-                @checked="(checked, taskId) => this.$emit('checked', checked, taskId)"></TaskItem>
+                @remove="(id) => this.$emit('remove', id)"
+                @add="(id, name) => this.$emit('add', id, name)"
+                @inputFocus="
+                    (newItemInput) => this.$emit('inputFocus', newItemInput)
+                "
+                @checked="
+                    (checked, taskId) => this.$emit('checked', checked, taskId)
+                "></TaskItem>
         </ul>
     </main>
 </template>
 
-<script>
+<script setup>
+    import { defineProps } from "vue";
     import TaskItem from "./TaskItem.vue";
 
-    export default {
-        props: {
-            taskList: {
-                type: Array,
-                required: true,
-            },
+    const props = defineProps({
+        taskList: {
+            type: Array,
+            required: true,
         },
-        methods: {
-            removeTask(id) {
-                this.$emit("remove", id);
-            },
-            addTask(id, name) {
-                this.$emit("add", id, name)
-            }
-        },
-        components: {
-            TaskItem,
-        },
-  
-};
+    });
 </script>
 
 <style lang="scss" scoped>
@@ -67,7 +59,6 @@
     }
 
     .tasklist__item {
-
         @media (max-width: 691px) {
             padding: 2px;
         }
