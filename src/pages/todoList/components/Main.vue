@@ -6,13 +6,13 @@
                 v-bind:key="task.id"
                 class="tasklist__item"
                 v-bind:task="task"
-                @remove="(id) => this.$emit('remove', id)"
-                @add="(id, name) => this.$emit('add', id, name)"
+                @remove="(id) => emit('remove', id)"
+                @add="(id, name) => emit('add', id, name)"
                 @inputFocus="
-                    (newItemInput) => this.$emit('inputFocus', newItemInput)
+                    (newItemInput) => emit('inputFocus', newItemInput)
                 "
                 @checked="
-                    (checked, taskId) => this.$emit('checked', checked, taskId)
+                    (checked, taskId) => emit('checked', checked, taskId)
                 "></TaskItem>
         </ul>
     </main>
@@ -28,6 +28,8 @@
             required: true,
         },
     });
+
+    const emit = defineEmits(["remove", "add", "inputFocus", "checked"]);
 </script>
 
 <style lang="scss" scoped>

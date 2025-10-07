@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-    import { onMounted, ref, watch, defineProps } from "vue";
+    import { onMounted, ref, watch, defineProps, defineEmits } from "vue";
 
     const props = defineProps({
         checked: {

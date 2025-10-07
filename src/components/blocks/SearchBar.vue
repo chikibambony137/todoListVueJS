@@ -2,14 +2,14 @@
     <div class="search-bar">
         <form
             class="search-bar__form"
-            @submit.prevent="search(this.searchInput)">
+            @submit.prevent="search">
             <div class="search-bar__field">
-                <input v-model="this.searchInput" placeholder="Search..." />
+                <input v-model="searchInput" placeholder="Search..." />
             </div>
             <button
                 class="search-bar__bttn"
                 type="submit"
-                v-if="!this.isLoading">
+                v-if="!isLoading">
                 <img
                     src="../ui/icons/search (1) 1.png"
                     alt="search"
@@ -20,48 +20,42 @@
     </div>
 </template>
 
-<script>
+<script setup>
+    import { ref, watch, defineEmits } from "vue";
     import Loading from "../ui/buttons/Loading.vue";
-    export default {
-        components: { Loading },
-        data() {
-            return {
-                searchInput: "",
-                isLoading: false,
-                timeoutID: function () {},
-                defaultSearchDelay: 500,
-                searchDelay: this.defaultSearchDelay,
-            };
-        },
 
-        methods: {
-            /**
-             * Вызывает событие search
-             */
-            search(input) {
-                clearTimeout(this.timeoutID);
-                this.$emit("search", this.searchInput);
-                this.isLoading = false;
-            },
-        },
-        watch: {
-            searchInput: {
-                handler() {
-                    clearTimeout(this.timeoutID);
-                    this.isLoading = true;
+    const searchInput = ref("");
+    const isLoading = ref(false);
 
-                    if (this.searchInput == "") this.searchDelay = 0;
-                    else this.searchDelay = this.defaultSearchDelay;
+    const timeoutID = ref(function () {});
+    const defaultSearchDelay = ref(500);
+    const searchDelay = ref(defaultSearchDelay);
 
-                    this.timeoutID = setTimeout(
-                        this.search,
-                        this.searchDelay,
-                        this.searchInput
-                    );
-                },
-            },
+    const emit = defineEmits(["search"]);
+
+    function search() {
+        clearTimeout(timeoutID.value);
+        emit("search", searchInput.value);
+        isLoading.value = false;
+    }
+
+    watch(
+        searchInput,
+        () => {
+            clearTimeout(timeoutID.value);
+            isLoading.value = true;
+
+            if (searchInput.value == "") searchDelay.value = 0;
+            else searchDelay.value = defaultSearchDelay.value;
+
+            timeoutID.value = setTimeout(
+                search,
+                searchDelay.value,
+                searchInput.value
+            );
         },
-    };
+        { deep: true }
+    );
 </script>
 
 <style scoped lang="scss">

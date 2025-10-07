@@ -8,13 +8,15 @@
         <div class="header__toolbar">
             <SearchBar
                 class="header__search-bar"
-                @search="searchItem"></SearchBar>
+                @search="(input) => emit('search', input)"></SearchBar>
             <sort-button
                 class="header__sort-bttn"
-                @click="sortList"></sort-button>
+                @click="
+                    console.log(localStorage.getItem('tasklist'))
+                "></sort-button>
             <add-button
                 class="header__add-bttn"
-                @click="addTaskTemplate"></add-button>
+                @click="emit('addTaskTemplate')"></add-button>
         </div>
     </header>
 </template>
@@ -30,17 +32,7 @@
         },
     });
 
-    function addTaskTemplate() {
-        this.$emit("addTaskTemplate");
-    }
-
-    function sortList() {
-        console.log(localStorage.getItem("tasklist")); // WIP
-    }
-
-    function searchItem(input) {
-        this.$emit("search", input);
-    }
+    const emit = defineEmits(["addTaskTemplate", "search"]);
 </script>
 
 <style scoped lang="scss">
