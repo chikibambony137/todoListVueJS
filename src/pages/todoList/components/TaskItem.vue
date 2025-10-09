@@ -6,7 +6,7 @@
             :checked="task.checked"></CheckBox>
         <form
             v-if="task.name == undefined"
-            @submit.prevent="accessNameTask(task.id, newItemInputName.value)">
+            @submit.prevent="accessNameTask(task.id, newItemInputName)">
             <input
                 ref="newItemInput"
                 class="item__input"

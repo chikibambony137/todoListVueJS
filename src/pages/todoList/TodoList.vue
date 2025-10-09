@@ -2,7 +2,7 @@
     <div class="content">
         <Header
             class="content__header"
-            v-bind:taskList="taskList"
+            v-bind:taskList="taskStore"
             @search="searchItem"
             @addTaskTemplate="addTaskTemplate"></Header>
         <Main
@@ -19,24 +19,30 @@
 
 <script setup>
     import { ref, onMounted, watch } from "vue";
+    import { useTaskStore } from "../../stores/taskStore";
 
     import Header from "./components/Header.vue";
     import Main from "./components/Main.vue";
 
-    // original list of tasks
-    let taskList = ref(JSON.parse(localStorage.getItem("tasklist")) || []);
+    // Подключаем хранилище Pinia
+    const taskStore = useTaskStore();
+
+    // // original list of tasks
+    // let taskList = ref(JSON.parse(localStorage.getItem("tasklist")) || []);
+
     // visuality list of tasks
     let taskListVisuality = ref([]);
 
     onMounted(() => {
-        taskListVisuality.value = taskList.value;
+        taskListVisuality.value = taskStore.tasks;
     });
 
     // if taskList is changed then he will be saved in localStorage
     watch(
-        taskList,
-        (newValue) => {
-            localStorage.setItem("tasklist", JSON.stringify(newValue));
+        taskStore,
+        () => {
+            localStorage.setItem("taskList", taskStore.tasks);
+            console.log('taskList was changed');
         },
         { deep: true }
     );
@@ -45,7 +51,8 @@
      * @param {number} id
      */
     function removeTask(id) {
-        taskList.value = taskList.value.filter((task) => task.id != id);
+        taskStore.removeTask(id);
+
         taskListVisuality.value = taskListVisuality.value.filter(
             (task) => task.id != id
         );
@@ -56,8 +63,7 @@
      * @param {string} name
      */
     function addTask(id, name) {
-        const task = taskList.value.filter((task) => task.id == id)[0];
-        task.name = name;
+        taskStore.setTaskName(id, name);
     }
 
     /** filters taskList and changes taskListVisuality by name
@@ -65,9 +71,9 @@
      */
     function searchItem(input) {
         if (input == "") {
-            taskListVisuality.value = taskList.value;
+            taskListVisuality.value = taskStore.tasks;
         } else {
-            taskListVisuality.value = taskList.value.filter((task) =>
+            taskListVisuality.value = taskStore.tasks.filter((task) =>
                 task.name?.toLowerCase().includes(input.toLowerCase())
             );
         }
@@ -78,16 +84,16 @@
 
     /** adds task template without name to start of taskList and focuses to DOM input */
     function addTaskTemplate() {
-        taskListVisuality.value = taskList.value;
-        taskList.value.unshift({ id: Date.now(), checked: false });
+        taskListVisuality.value = taskStore.tasks;
+        // taskStore.tasks.unshift({ id: Date.now(), checked: false });
+        taskStore.addTask({ id: Date.now(), checked: false });
         setTimeout(() => {
             itemTemplate.value.focus();
         }, 500);
     }
 
     function toggleCheckBoxTask(checked, taskId) {
-        let task = taskList.value.filter((task) => task.id == taskId)[0];
-        task.checked = checked;
+        taskStore.checkTask(checked, taskId);
     }
 </script>
 

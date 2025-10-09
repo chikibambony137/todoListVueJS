@@ -27,7 +27,7 @@
 
     const props = defineProps({
         taskList: {
-            type: Array,
+            type: Object,
             required: true,
         },
     });
