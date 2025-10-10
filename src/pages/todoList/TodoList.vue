@@ -1,22 +1,12 @@
 <template>
     <div class="content">
-        <Header
-            class="content__header"
-            v-bind:taskList="taskStore"
-            @search="searchItem"
-            @addTaskTemplate="addTaskTemplate"></Header>
-        <Main
-            class="content__tasklist"
-            v-bind:taskList="taskListVisuality"
-            @remove="removeTask"
-            @add="addTask"
-            @inputFocus="(newItemTemplate) => (itemTemplate = newItemTemplate)"
-            @checked="toggleCheckBoxTask"></Main>
+        <Header class="content__header"></Header>
+        <Main class="content__tasklist"></Main>
     </div>
 </template>
 
 <script setup>
-    import { ref, onMounted, watch } from "vue";
+    import { onMounted, watch } from "vue";
     import { useTaskStore } from "../../stores/taskStore";
 
     import Header from "./components/Header.vue";
@@ -25,70 +15,19 @@
     // Подключаем хранилище Pinia
     const taskStore = useTaskStore();
 
-    // visuality list of tasks
-    let taskListVisuality = ref([]);
-
     onMounted(() => {
-        taskListVisuality.value = taskStore.tasks;
+        taskStore.taskListVisuality = taskStore.tasks;
     });
 
     // if taskList is changed then he will be saved in localStorage
     watch(
-        taskStore,
+        taskStore.tasks,
         () => {
             localStorage.setItem("taskList", taskStore.tasks);
             console.log("taskList was changed");
         },
         { deep: true }
     );
-
-    /** ref to DOM input */
-    const itemTemplate = ref(null);
-
-    /** adds task template without name to start of taskList and focuses to DOM input */
-    function addTaskTemplate() {
-        taskListVisuality.value = taskStore.tasks;
-        taskStore.addTask({ id: Date.now(), checked: false });
-        setTimeout(() => {
-            itemTemplate.value.focus();
-        }, 100);
-    }
-
-    /** sets name to task by id in taskList
-     * @param {number} id
-     * @param {string} name
-     */
-    function addTask(id, name) {
-        taskStore.setTaskName(id, name);
-    }
-
-    /** removes task by from original taskList & taskListVisuality
-     * @param {number} id
-     */
-    function removeTask(id) {
-        taskStore.removeTask(id);
-
-        taskListVisuality.value = taskListVisuality.value.filter(
-            (task) => task.id != id
-        );
-    }
-
-    /** filters taskList and changes taskListVisuality by name
-     * @param {string} input
-     */
-    function searchItem(input) {
-        if (input == "") {
-            taskListVisuality.value = taskStore.tasks;
-        } else {
-            taskListVisuality.value = taskStore.tasks.filter((task) =>
-                task.name?.toLowerCase().includes(input.toLowerCase())
-            );
-        }
-    }
-
-    function toggleCheckBoxTask(checked, taskId) {
-        taskStore.checkTask(checked, taskId);
-    }
 </script>
 
 <style scoped lang="scss">

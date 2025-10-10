@@ -2,11 +2,11 @@
     <div class="item">
         <CheckBox
             class="item__checkbox"
-            @checked="(checked) => emit('checked', checked, task.id)"
+            @checked="(checked) => check(checked, task.id)"
             :checked="task.checked"></CheckBox>
         <form
             v-if="task.name == undefined"
-            @submit.prevent="accessNameTask(task.id, newItemInputName)">
+            @submit.prevent="setName(task.id, newItemInputName)">
             <input
                 ref="newItemInput"
                 class="item__input"
@@ -21,10 +21,14 @@
 </template>
 
 <script setup>
-    import { ref, onMounted, useTemplateRef } from "vue";
+    import { ref, useTemplateRef } from "vue";
+
+    import { useTaskStore } from "../../../stores/taskStore";
 
     import CheckBox from "../../../components/ui/buttons/CheckBox.vue";
     import TrashButton from "../../../components/ui/buttons/TrashButton.vue";
+
+    const taskStore = useTaskStore();
 
     const props = defineProps({
         task: {
@@ -33,24 +37,22 @@
         },
     });
 
-    const emit = defineEmits(["add", "remove", "inputFocus", "checked"]);
-
     const newItemInputName = ref("");
 
-    function removeItem(taskId) {
-        emit("remove", taskId);
+    function check(checked, id) {
+        taskStore.checkTask(checked, id);
     }
 
-    function accessNameTask(taskId, taskName) { 
-        emit("add", taskId, taskName);
+    function removeItem(taskId) {
+        taskStore.removeTask(taskId);
+    }
+
+    function setName(taskId, taskName) { 
+        taskStore.setTaskName(taskId, taskName);
         newItemInputName.value = "";
     }
 
-    const newItemInput = useTemplateRef("newItemInput");
-
-    onMounted(() => {
-        emit("inputFocus", newItemInput.value);
-    });
+    const newItemInput = useTemplateRef("newItemInput"); // for focus WIP
 </script>
 
 <style lang="scss" scoped>

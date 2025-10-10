@@ -5,6 +5,7 @@ export const useTaskStore = defineStore("tasks", {
     // Состояние (state): данные, которые хранит хранилище
     state: () => ({
         tasks: JSON.parse(localStorage.getItem("tasklist")) || [], // Список задач
+        taskListVisuality: [],
     }),
 
     // Геттеры (getters): вычисляемые свойства
@@ -15,35 +16,54 @@ export const useTaskStore = defineStore("tasks", {
 
     // Действия (actions): методы для изменения состояния
     actions: {
-        // Добавляет новую задачу
-        addTask(task) {
-            this.tasks.unshift(task);
+        /** adds task template without name to start of taskList and focuses to DOM input */
+        addTaskTemplate() {
+            this.tasks.unshift({ id: Date.now(), checked: false });
             localStorage.setItem("tasklist", JSON.stringify(this.tasks));
+            this.taskListVisuality = this.tasks;
         },
 
-        // Удаляет задачу по индексу
-        removeTask(index) {
-            this.tasks = this.tasks.filter((task) => task.id != index);
-            localStorage.setItem("tasklist", JSON.stringify(this.tasks));
-        },
-
-        checkTask(checked, index) {
+        setTaskName(id, name) {
             this.tasks.forEach((task) => {
-                if (task.id == index) task.checked = checked;
-            });
-            localStorage.setItem("tasklist", JSON.stringify(this.tasks));
-        },
-
-        setTaskName(index, name) {
-            this.tasks.forEach((task) => {
-                if (task.id == index) {
+                if (task.id == id) {
                     task.name = name;
                     console.log(task.name);
-                };
-                
+                }
             });
-            
+
             localStorage.setItem("tasklist", JSON.stringify(this.tasks));
-        }
+        },
+
+        checkTask(checked, id) {
+            this.tasks.forEach((task) => {
+                if (task.id == id) task.checked = checked;
+            });
+            localStorage.setItem("tasklist", JSON.stringify(this.tasks));
+        },
+
+        /** filters taskList and changes taskListVisuality by name
+         * @param {string} input
+         */
+        searchTask(input) {
+            if (input == "") {
+                this.taskListVisuality = this.tasks;
+            } else {
+                this.taskListVisuality = this.tasks.filter((task) =>
+                    task.name?.toLowerCase().includes(input.toLowerCase())
+                );
+            }
+        },
+
+        /** removes task by from original taskList & taskListVisuality
+         * @param {number} id
+         */
+        removeTask(id) {
+            this.tasks = this.tasks.filter((task) => task.id != id);
+            localStorage.setItem("tasklist", JSON.stringify(this.tasks));
+
+            this.taskListVisuality = this.taskListVisuality.filter(
+                (task) => task.id != id
+            );
+        },
     },
 });

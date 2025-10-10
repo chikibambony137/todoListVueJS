@@ -8,30 +8,30 @@
         <div class="header__toolbar">
             <SearchBar
                 class="header__search-bar"
-                @search="(input) => emit('search', input)"></SearchBar>
+                @search="search"></SearchBar>
             <sort-button
                 class="header__sort-bttn"
-                @click="
-                    console.log(localStorage.getItem('tasklist'))
-                "></sort-button>
+                @click="alert('jopa')"></sort-button>
             <add-button
                 class="header__add-bttn"
-                @click="emit('addTaskTemplate')"></add-button>
+                @click="addTemplate"></add-button>
         </div>
     </header>
 </template>
 
 <script setup>
+    import { useTaskStore } from "../../../stores/taskStore";
     import SearchBar from "../../../components/blocks/SearchBar.vue";
 
-    const props = defineProps({
-        taskList: {
-            type: Object,
-            required: true,
-        },
-    });
+    const taskStore = useTaskStore();
 
-    const emit = defineEmits(["addTaskTemplate", "search"]);
+    function search(input) {
+        taskStore.searchTask(input);
+    }
+
+    function addTemplate() {
+        taskStore.addTaskTemplate();
+    }
 </script>
 
 <style scoped lang="scss">

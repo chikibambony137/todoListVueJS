@@ -2,33 +2,19 @@
     <main class="tasklist">
         <ul class="tasklist__list">
             <TaskItem
-                v-for="task in taskList"
-                v-bind:key="task.id"
                 class="tasklist__item"
-                v-bind:task="task"
-                @remove="(id) => emit('remove', id)"
-                @add="(id, name) => emit('add', id, name)"
-                @inputFocus="
-                    (newItemInput) => emit('inputFocus', newItemInput)
-                "
-                @checked="
-                    (checked, taskId) => emit('checked', checked, taskId)
-                "></TaskItem>
+                v-for="task in taskStore.taskListVisuality"
+                v-bind:key="task.id"
+                v-bind:task="task"></TaskItem>
         </ul>
     </main>
 </template>
 
 <script setup>
+    import { useTaskStore } from "../../../stores/taskStore";
     import TaskItem from "./TaskItem.vue";
 
-    const props = defineProps({
-        taskList: {
-            type: Array,
-            required: true,
-        },
-    });
-
-    const emit = defineEmits(["remove", "add", "inputFocus", "checked"]);
+    const taskStore = useTaskStore();
 </script>
 
 <style lang="scss" scoped>
