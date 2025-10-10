@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-    import { ref, defineProps, defineEmits, onMounted, useTemplateRef } from "vue";
+    import { ref, onMounted, useTemplateRef } from "vue";
 
     import CheckBox from "../../../components/ui/buttons/CheckBox.vue";
     import TrashButton from "../../../components/ui/buttons/TrashButton.vue";

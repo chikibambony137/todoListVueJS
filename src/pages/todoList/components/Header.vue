@@ -22,7 +22,6 @@
 </template>
 
 <script setup>
-    import { defineProps } from "vue";
     import SearchBar from "../../../components/blocks/SearchBar.vue";
 
     const props = defineProps({

@@ -10,9 +10,7 @@
             v-bind:taskList="taskListVisuality"
             @remove="removeTask"
             @add="addTask"
-            @inputFocus="
-                (newItemTemplate) => (itemTemplate = newItemTemplate)
-            "
+            @inputFocus="(newItemTemplate) => (itemTemplate = newItemTemplate)"
             @checked="toggleCheckBoxTask"></Main>
     </div>
 </template>
@@ -27,9 +25,6 @@
     // Подключаем хранилище Pinia
     const taskStore = useTaskStore();
 
-    // // original list of tasks
-    // let taskList = ref(JSON.parse(localStorage.getItem("tasklist")) || []);
-
     // visuality list of tasks
     let taskListVisuality = ref([]);
 
@@ -42,10 +37,30 @@
         taskStore,
         () => {
             localStorage.setItem("taskList", taskStore.tasks);
-            console.log('taskList was changed');
+            console.log("taskList was changed");
         },
         { deep: true }
     );
+
+    /** ref to DOM input */
+    const itemTemplate = ref(null);
+
+    /** adds task template without name to start of taskList and focuses to DOM input */
+    function addTaskTemplate() {
+        taskListVisuality.value = taskStore.tasks;
+        taskStore.addTask({ id: Date.now(), checked: false });
+        setTimeout(() => {
+            itemTemplate.value.focus();
+        }, 100);
+    }
+
+    /** sets name to task by id in taskList
+     * @param {number} id
+     * @param {string} name
+     */
+    function addTask(id, name) {
+        taskStore.setTaskName(id, name);
+    }
 
     /** removes task by from original taskList & taskListVisuality
      * @param {number} id
@@ -56,14 +71,6 @@
         taskListVisuality.value = taskListVisuality.value.filter(
             (task) => task.id != id
         );
-    }
-
-    /** sets name to task by id in taskList
-     * @param {number} id
-     * @param {string} name
-     */
-    function addTask(id, name) {
-        taskStore.setTaskName(id, name);
     }
 
     /** filters taskList and changes taskListVisuality by name
@@ -77,19 +84,6 @@
                 task.name?.toLowerCase().includes(input.toLowerCase())
             );
         }
-    }
-
-    /** ref to DOM input */
-    const itemTemplate = ref(null);
-
-    /** adds task template without name to start of taskList and focuses to DOM input */
-    function addTaskTemplate() {
-        taskListVisuality.value = taskStore.tasks;
-        // taskStore.tasks.unshift({ id: Date.now(), checked: false });
-        taskStore.addTask({ id: Date.now(), checked: false });
-        setTimeout(() => {
-            itemTemplate.value.focus();
-        }, 500);
     }
 
     function toggleCheckBoxTask(checked, taskId) {

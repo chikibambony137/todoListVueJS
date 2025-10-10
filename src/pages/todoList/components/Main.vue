@@ -19,7 +19,6 @@
 </template>
 
 <script setup>
-    import { defineProps } from "vue";
     import TaskItem from "./TaskItem.vue";
 
     const props = defineProps({
