@@ -16,7 +16,7 @@
     const taskStore = useTaskStore();
 
     onMounted(() => {
-        taskStore.taskListVisuality = taskStore.tasks;
+        taskStore.taskListVisuality = [...taskStore.tasks];
     });
 
     // if taskList is changed then he will be saved in localStorage
@@ -25,6 +25,7 @@
         () => {
             localStorage.setItem("taskList", taskStore.tasks);
             console.log("taskList was changed");
+            console.log(taskStore.tasks);
         },
         { deep: true }
     );

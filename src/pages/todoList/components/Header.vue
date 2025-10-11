@@ -6,12 +6,10 @@
             </h1>
         </div>
         <div class="header__toolbar">
-            <SearchBar
-                class="header__search-bar"
-                @search="search"></SearchBar>
+            <SearchBar class="header__search-bar" @search="search"></SearchBar>
             <sort-button
                 class="header__sort-bttn"
-                @click="alert('jopa')"></sort-button>
+                @click="changeSortMethod"></sort-button>
             <add-button
                 class="header__add-bttn"
                 @click="addTemplate"></add-button>
@@ -20,6 +18,8 @@
 </template>
 
 <script setup>
+    import { ref } from "vue";
+
     import { useTaskStore } from "../../../stores/taskStore";
     import SearchBar from "../../../components/blocks/SearchBar.vue";
 
@@ -31,6 +31,15 @@
 
     function addTemplate() {
         taskStore.addTaskTemplate();
+    }
+
+    let sortMethodId = ref(0);
+
+    function changeSortMethod() {
+        sortMethodId.value < taskStore.sortMethodsCount - 1
+            ? (sortMethodId.value += 1)
+            : (sortMethodId.value = 0);
+        taskStore.sortTasks(sortMethodId.value);
     }
 </script>
 

@@ -6,12 +6,22 @@ export const useTaskStore = defineStore("tasks", {
     state: () => ({
         tasks: JSON.parse(localStorage.getItem("tasklist")) || [], // Список задач
         taskListVisuality: [],
+
+        sortMethods: (state) => [
+            state.sortTasksByDate,
+            state.sortTasksByDateDESC,
+            state.sortTasksByAlphabet,
+            state.sortTasksByAlphabetDESC,
+            state.sortTasksByChecked,
+            state.sortTasksByCheckedDESC,
+        ],
     }),
 
     // Геттеры (getters): вычисляемые свойства
     getters: {
         // Возвращает количество задач
         taskCount: (state) => state.tasks.length,
+        sortMethodsCount: (state) => state.sortMethods(state).length,
     },
 
     // Действия (actions): методы для изменения состояния
@@ -20,7 +30,7 @@ export const useTaskStore = defineStore("tasks", {
         addTaskTemplate() {
             this.tasks.unshift({ id: Date.now(), checked: false });
             localStorage.setItem("tasklist", JSON.stringify(this.tasks));
-            this.taskListVisuality = this.tasks;
+            this.taskListVisuality = [...this.tasks];
         },
 
         setTaskName(id, name) {
@@ -46,9 +56,9 @@ export const useTaskStore = defineStore("tasks", {
          */
         searchTask(input) {
             if (input == "") {
-                this.taskListVisuality = this.tasks;
+                this.taskListVisuality = [...this.tasks];
             } else {
-                this.taskListVisuality = this.tasks.filter((task) =>
+                this.taskListVisuality = [...this.tasks].filter((task) =>
                     task.name?.toLowerCase().includes(input.toLowerCase())
                 );
             }
@@ -65,5 +75,49 @@ export const useTaskStore = defineStore("tasks", {
                 (task) => task.id != id
             );
         },
+
+        sortTasksByDate() {
+            this.taskListVisuality = [...this.tasks];
+            console.log('Сортировка по дате добавления (по умолчанию)');
+        },
+
+        sortTasksByDateDESC() {
+            this.taskListVisuality = this.taskListVisuality.reverse();
+            console.log('Сортировка по дате добавления (реверс)');
+        },
+
+        sortTasksByAlphabet() {
+            this.taskListVisuality.sort((a, b) => {
+                return (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0;
+            });
+            console.log('Сортировка по алфавиту (ABC)');
+        },
+
+        sortTasksByAlphabetDESC() {
+            this.taskListVisuality.sort((a, b) => {
+                return (a.name < b.name) ? 1 : (a.name > b.name) ? -1 : 0;
+            });
+            console.log("Сортировка по алфавиту (CBA)");
+        },
+
+        sortTasksByChecked() {
+            this.taskListVisuality.sort((a, b) => {
+                return (a.checked && !b.checked) ? -1 : (!a.checked && b.checked) ? 1 : 0;
+            });
+            console.log("Сортировка по выполненным заданиям");
+        },
+
+        sortTasksByCheckedDESC() {
+            this.taskListVisuality.sort((a, b) => {
+                return (a.checked && !b.checked) ? -1 : (!a.checked && b.checked) ? 1 : 0;
+            }).reverse();
+            console.log("Сортировка по невыполненным заданиям");
+        },
+
+        sortTasks(sortMethodId) {
+            this.sortMethods(this)[sortMethodId]();
+        },
+
+        
     },
 });
