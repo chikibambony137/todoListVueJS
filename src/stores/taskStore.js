@@ -1,123 +1,143 @@
 import { defineStore } from "pinia";
+import { ref, computed } from "vue";
 
 // Создаем хранилище с помощью defineStore
-export const useTaskStore = defineStore("tasks", {
-    // Состояние (state): данные, которые хранит хранилище
-    state: () => ({
-        tasks: JSON.parse(localStorage.getItem("tasklist")) || [], // Список задач
-        taskListVisuality: [],
+export const useTaskStore = defineStore("tasks", () => {
 
-        sortMethods: (state) => [
-            state.sortTasksByDate,
-            state.sortTasksByDateDESC,
-            state.sortTasksByAlphabet,
-            state.sortTasksByAlphabetDESC,
-            state.sortTasksByChecked,
-            state.sortTasksByCheckedDESC,
-        ],
-    }),
+    const tasks = ref(JSON.parse(localStorage.getItem("tasklist")) || []);
+    const taskListVisuality = ref([]);
 
-    // Геттеры (getters): вычисляемые свойства
-    getters: {
-        // Возвращает количество задач
-        taskCount: (state) => state.tasks.length,
-        sortMethodsCount: (state) => state.sortMethods(state).length,
-    },
+    const taskCount = computed(() => tasks.value.length);
 
-    // Действия (actions): методы для изменения состояния
-    actions: {
-        /** adds task template without name to start of taskList and focuses to DOM input */
-        addTaskTemplate() {
-            this.tasks.unshift({ id: Date.now(), checked: false });
-            localStorage.setItem("tasklist", JSON.stringify(this.tasks));
-            this.taskListVisuality = [...this.tasks];
-        },
+    const updateLocalStorage = () => {
+        localStorage.setItem("tasklist", JSON.stringify(tasks.value));
+    };
 
-        setTaskName(id, name) {
-            this.tasks.forEach((task) => {
-                if (task.id == id) {
-                    task.name = name;
-                    console.log(task.name);
-                }
-            });
+    /** adds task template without name to start of taskList and focuses to DOM input */
+    const addTaskTemplate = () => {
+        tasks.value.unshift({ id: Date.now(), checked: false });
+        updateLocalStorage();
+        taskListVisuality.value = [...tasks.value];
+    };
 
-            localStorage.setItem("tasklist", JSON.stringify(this.tasks));
-        },
-
-        checkTask(checked, id) {
-            this.tasks.forEach((task) => {
-                if (task.id == id) task.checked = checked;
-            });
-            localStorage.setItem("tasklist", JSON.stringify(this.tasks));
-        },
-
-        /** filters taskList and changes taskListVisuality by name
-         * @param {string} input
-         */
-        searchTask(input) {
-            if (input == "") {
-                this.taskListVisuality = [...this.tasks];
-            } else {
-                this.taskListVisuality = [...this.tasks].filter((task) =>
-                    task.name?.toLowerCase().includes(input.toLowerCase())
-                );
+    const setTaskName = (id, name) => {
+        tasks.value.forEach((task) => {
+            if (task.id == id) {
+                task.name = name;
             }
-        },
+        });
 
-        /** removes task by from original taskList & taskListVisuality
-         * @param {number} id
-         */
-        removeTask(id) {
-            this.tasks = this.tasks.filter((task) => task.id != id);
-            localStorage.setItem("tasklist", JSON.stringify(this.tasks));
+        updateLocalStorage();
+    };
 
-            this.taskListVisuality = this.taskListVisuality.filter(
-                (task) => task.id != id
+    const checkTask = (checked, id) => {
+        tasks.value.forEach((task) => {
+            if (task.id == id) task.checked = checked;
+        });
+
+        updateLocalStorage();
+    };
+
+    /** filters taskList and changes taskListVisuality by name
+     * @param {string} input
+     */
+    const searchTask = (input) => {
+        if (input == "") {
+            taskListVisuality.value = [...tasks.value];
+        } else {
+            taskListVisuality.value = [...tasks.value].filter((task) =>
+                task.name?.toLowerCase().includes(input.toLowerCase())
             );
-        },
+        }
+    };
 
-        sortTasksByDate() {
-            this.taskListVisuality = [...this.tasks];
-            console.log('Сортировка по дате добавления (по умолчанию)');
-        },
+    /** removes task by from original taskList & taskListVisuality
+     * @param {number} id
+     */
+    const removeTask = (id) => {
+        tasks.value = tasks.value.filter((task) => task.id != id);
+        updateLocalStorage();
 
-        sortTasksByDateDESC() {
-            this.taskListVisuality = this.taskListVisuality.reverse();
-            console.log('Сортировка по дате добавления (реверс)');
-        },
+        taskListVisuality.value = taskListVisuality.value.filter(
+            (task) => task.id != id
+        );
+    };
 
-        sortTasksByAlphabet() {
-            this.taskListVisuality.sort((a, b) => {
-                return (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0;
-            });
-            console.log('Сортировка по алфавиту (ABC)');
-        },
+    const sortTasksByDate = () => {
+        taskListVisuality.value = [...tasks.value];
+        console.log("Сортировка по дате добавления (по умолчанию)");
+    };
 
-        sortTasksByAlphabetDESC() {
-            this.taskListVisuality.sort((a, b) => {
-                return (a.name < b.name) ? 1 : (a.name > b.name) ? -1 : 0;
-            });
-            console.log("Сортировка по алфавиту (CBA)");
-        },
+    const sortTasksByDateDESC = () => {
+        taskListVisuality.value = taskListVisuality.value.reverse();
+        console.log("Сортировка по дате добавления (реверс)");
+    };
 
-        sortTasksByChecked() {
-            this.taskListVisuality.sort((a, b) => {
-                return (a.checked && !b.checked) ? -1 : (!a.checked && b.checked) ? 1 : 0;
-            });
-            console.log("Сортировка по выполненным заданиям");
-        },
+    const sortTasksByAlphabet = () => {
+        taskListVisuality.value.sort((a, b) => {
+            return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+        });
+        console.log("Сортировка по алфавиту (ABC)");
+    };
 
-        sortTasksByCheckedDESC() {
-            this.taskListVisuality.sort((a, b) => {
-                return (a.checked && !b.checked) ? -1 : (!a.checked && b.checked) ? 1 : 0;
-            }).reverse();
-            console.log("Сортировка по невыполненным заданиям");
-        },
+    const sortTasksByAlphabetDESC = () => {
+        taskListVisuality.value.sort((a, b) => {
+            return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
+        });
+        console.log("Сортировка по алфавиту (CBA)");
+    };
 
-        sortTasks(sortMethodId) {
-            this.sortMethods(this)[sortMethodId]();
-        },
+    const sortTasksByChecked = () => {
+        taskListVisuality.value.sort((a, b) => {
+            return a.checked && !b.checked
+                ? -1
+                : !a.checked && b.checked
+                ? 1
+                : 0;
+        });
+        console.log("Сортировка по выполненным заданиям");
+    };
 
-        
-    },
+    const sortTasksByCheckedDESC = () => {
+        taskListVisuality.value
+            .sort((a, b) => {
+                return a.checked && !b.checked
+                    ? -1
+                    : !a.checked && b.checked
+                    ? 1
+                    : 0;
+            })
+            .reverse();
+        console.log("Сортировка по невыполненным заданиям");
+    };
+
+    const sortMethods = [
+        sortTasksByDate,
+        sortTasksByDateDESC,
+        sortTasksByAlphabet,
+        sortTasksByAlphabetDESC,
+        sortTasksByChecked,
+        sortTasksByCheckedDESC,
+    ];
+
+    const sortMethodsCount = computed(() => sortMethods.length);
+
+    const sortTasks = (sortMethodId) => {
+        sortMethods[sortMethodId]();
+    };
+
+    // Возвращаем все состояния, геттеры и действия
+    return {
+        tasks,
+        taskListVisuality,
+        taskCount,
+        sortMethods,
+        sortMethodsCount,
+        addTaskTemplate,
+        setTaskName,
+        checkTask,
+        searchTask,
+        removeTask,
+        sortTasks,
+    };
 });

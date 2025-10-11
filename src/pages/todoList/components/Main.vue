@@ -3,9 +3,11 @@
         <ul class="tasklist__list">
             <TaskItem
                 class="tasklist__item"
+                v-if="taskStore.taskListVisuality.length > 0"
                 v-for="task in taskStore.taskListVisuality"
                 v-bind:key="task.id"
                 v-bind:task="task"></TaskItem>
+                <h3 class="tasklist__h3" v-else>Ничего нет :(</h3>
         </ul>
     </main>
 </template>
@@ -49,5 +51,11 @@
         @media (max-width: 691px) {
             padding: 2px;
         }
+    }
+
+    .tasklist__h3 {
+        color: white;
+        font-family: var.$default-font-family;
+        font-weight: 300;
     }
 </style>
