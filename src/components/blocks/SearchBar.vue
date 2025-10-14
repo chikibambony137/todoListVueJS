@@ -21,14 +21,14 @@
 </template>
 
 <script setup>
-    import { ref, watch, defineEmits } from "vue";
+    import { ref, watch } from "vue";
     import Loading from "../ui/buttons/Loading.vue";
 
     const searchInput = ref("");
     const isLoading = ref(false);
 
     const timeoutID = ref(function () {});
-    const defaultSearchDelay = ref(500);
+    const defaultSearchDelay = 500;
     const searchDelay = ref(defaultSearchDelay);
 
     const emit = defineEmits(["search"]);
@@ -46,7 +46,7 @@
             isLoading.value = true;
 
             if (searchInput.value == "") searchDelay.value = 0;
-            else searchDelay.value = defaultSearchDelay.value;
+            else searchDelay.value = defaultSearchDelay;
 
             timeoutID.value = setTimeout(
                 search,

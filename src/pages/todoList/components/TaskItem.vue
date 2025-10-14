@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-    import { ref, useTemplateRef } from "vue";
+    import { ref, useTemplateRef, onMounted, watch, nextTick } from "vue";
 
     import { useTaskStore } from "../../../stores/taskStore";
 
@@ -47,12 +47,34 @@
         taskStore.removeTask(taskId);
     }
 
-    function setName(taskId, taskName) { 
+    function setName(taskId, taskName) {
         taskStore.setTaskName(taskId, taskName);
         newItemInputName.value = "";
     }
 
     const newItemInput = useTemplateRef("newItemInput"); // for focus WIP
+
+    // Фокусируемся, когда компонент смонтирован И input виден
+    onMounted(() => {
+        // Проверяем, что input должен быть виден (task.name == undefined)
+        // и что ref действительно указывает на DOM-элемент
+        if (props.task.name === undefined) {
+            if (newItemInput.value) {
+                newItemInput.value.focus();
+            }
+        }
+    });
+
+    // Очищаем newItemInputName, если task.name было установлено (что переключает v-if)
+    // чтобы при возможном повторном появлении инпута, он был пустой
+    watch(
+        () => props.task.name,
+        (newName) => {
+            if (newName !== undefined && newItemInputName.value !== "") {
+                newItemInputName.value = "";
+            }
+        }
+    );
 </script>
 
 <style lang="scss" scoped>
